@@ -1,0 +1,14 @@
+node_modules/
+lib/
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.tsbuildinfo
+dist/
+build/
+*.tgz
+package-lock.json
+.env
+.env.local
+.env.*.local

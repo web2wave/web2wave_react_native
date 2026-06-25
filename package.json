@@ -1,6 +1,6 @@
 {
   "name": "web2wave",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Web2Wave is a lightweight React Native package that provides a simple interface for managing user subscriptions and properties through a REST API.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

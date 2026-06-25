@@ -7,6 +7,7 @@ Web2Wave is a lightweight React Native package that provides a simple interface 
 - Fetch subscription status for users
 - Check for active subscriptions
 - Manage user properties
+- Identify web2wave user via device fingerprinting
 - Set third-party profiles (Adapty, RevenueCat, Qonversion)
 - WebView integration for quizzes and landing pages
 - Thread-safe singleton design
@@ -110,6 +111,34 @@ if (result.isSuccess) {
   console.log('Property updated successfully');
 } else {
   console.log('Failed to update property:', result.errorMessage);
+}
+```
+
+### Identify web2wave user
+
+The `identify()` method identifies a user using device fingerprinting and returns identification metadata including the `user_id`. Use it when a deeplink is unavailable.
+
+```typescript
+const identificationData = await Web2Wave.shared.identify();
+
+if (identificationData?.success === 1 && identificationData.user_id) {
+  const userId = identificationData.user_id;
+  console.log('Identified user:', userId);
+
+  await Web2Wave.shared.setAdaptyProfileID(userId, '{adaptyProfileID}');
+} else {
+  console.log('Failed to identify user');
+}
+```
+
+**Response format:**
+
+```typescript
+{
+  success: 1,
+  user_id: 'identified_user_guid',
+  match_method: 'match_method_used',
+  platform: 'iOS' // or 'Android'
 }
 ```
 
@@ -262,6 +291,10 @@ Set Adapty profileID.
 ##### `setQonversionProfileID(web2waveUserId: string, qonversionProfileId: string): Promise<Web2WaveResponse>`
 
 Set Qonversion ProfileID.
+
+##### `identify(): Promise<IdentifyResponse | null>`
+
+Identifies a user using the device fingerprint and returns identification metadata.
 
 ### `openWebPage(options): void`
 

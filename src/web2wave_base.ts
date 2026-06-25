@@ -1,4 +1,5 @@
-import { Web2WaveResponse, Subscription, UserProperties } from './types';
+import { Platform, Dimensions } from 'react-native';
+import { Web2WaveResponse, Subscription, UserProperties, IdentifyResponse } from './types';
 
 export class Web2Wave {
   private static instance: Web2Wave;
@@ -14,6 +15,31 @@ export class Web2Wave {
     return Web2Wave.instance;
   }
 
+  private getPlatform(): string {
+    if (Platform.OS === 'ios') return 'iOS';
+    if (Platform.OS === 'android') return 'Android';
+    return 'Other';
+  }
+
+  private getScreenSize(): string {
+    const { width, height } = Dimensions.get('window');
+    return `${Math.round(width)}x${Math.round(height)}`;
+  }
+
+  private getTimezone(): string {
+    const totalMinutes = -new Date().getTimezoneOffset();
+    const hours = Math.trunc(totalMinutes / 60);
+    const minutes = Math.abs(totalMinutes % 60);
+    const sign = hours >= 0 ? '+' : '-';
+    return `UTC${sign}${String(Math.abs(hours)).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  }
+
+  private getOSVersion(): string {
+    if (Platform.OS === 'ios') return `iOS ${Platform.Version}`;
+    if (Platform.OS === 'android') return `Android ${Platform.Version}`;
+    return 'Unknown';
+  }
+
   private get headers(): Record<string, string> {
     if (!this.apiKey) {
       throw new Error('You must initialize apiKey before use');
@@ -22,6 +48,10 @@ export class Web2Wave {
       'api-key': this.apiKey,
       'Cache-Control': 'no-cache',
       Pragma: 'no-cache',
+      platform: this.getPlatform(),
+      screen_size: this.getScreenSize(),
+      timezone: this.getTimezone(),
+      os_version: this.getOSVersion(),
     };
   }
 
@@ -267,5 +297,22 @@ export class Web2Wave {
       'qonversion_profile_id',
       qonversionProfileId
     );
+  }
+
+  async identify(): Promise<IdentifyResponse | null> {
+    if (!this.apiKey) {
+      throw new Error('You must initialize apiKey before use');
+    }
+
+    const url = `${this.baseURL}/api/user/identify`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.headers,
+    });
+
+    if (response.status === 200) {
+      return await response.json();
+    }
+    return null;
   }
 }

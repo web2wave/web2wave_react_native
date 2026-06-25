@@ -7,7 +7,7 @@ Web2Wave is a lightweight React Native package that provides a simple interface 
 - Fetch subscription status for users
 - Check for active subscriptions
 - Manage user properties
-- Identify web2wave user via device fingerprinting
+- web2wave deferred deeplinks via `identify()`
 - Set third-party profiles (Adapty, RevenueCat, Qonversion)
 - WebView integration for quizzes and landing pages
 - Thread-safe singleton design
@@ -114,9 +114,9 @@ if (result.isSuccess) {
 }
 ```
 
-### Identify web2wave user
+### web2wave deferred deeplinks
 
-The `identify()` method identifies a user using device fingerprinting and returns identification metadata including the `user_id`. Use it as an **alternative to MMP attribution** (AppsFlyer, Adjust, Branch, etc.) when you do not run those tools — call it on first app launch instead of reading an install deeplink.
+The `identify()` method resolves a web2wave user via **deferred deeplinks** and returns identification metadata including the `user_id`. Use it as an **alternative to MMP attribution** (AppsFlyer, Adjust, Branch, etc.) when you do not run those tools — call it on first app launch instead of reading an install deeplink.
 
 ```typescript
 const identificationData = await Web2Wave.shared.identify();
@@ -294,7 +294,7 @@ Set Qonversion ProfileID.
 
 ##### `identify(): Promise<IdentifyResponse | null>`
 
-Identifies a user using the device fingerprint. Alternative to MMP-based deeplink attribution.
+Resolves a user via web2wave deferred deeplinks. Alternative to MMP-based deeplink attribution.
 
 ### `openWebPage(options): void`
 

@@ -1,0 +1,10 @@
+src/
+example/
+*.md
+!README.md
+tsconfig.json
+.gitignore
+.npmignore
+Makefile
+MIGRATION_SUMMARY.md
+PUBLISHING.md

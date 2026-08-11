@@ -40,11 +40,41 @@ export class Web2Wave {
     return 'Unknown';
   }
 
+  /**
+   * Device model for fingerprinting.
+   * Android: Platform.constants.Model (e.g. "Pixel 7", "SM-S911B").
+   * iOS: optional react-native-device-info getDeviceId() → "iPhone15,2".
+   */
+  private getDeviceModel(): string | undefined {
+    if (Platform.OS === 'android') {
+      const constants = Platform.constants as { Model?: string };
+      const model = constants?.Model?.trim();
+      if (model) return model;
+    }
+
+    if (Platform.OS === 'ios') {
+      try {
+        // Optional peer — aligns with Flutter utsname.machine when installed.
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const DeviceInfo = require('react-native-device-info');
+        const id =
+          typeof DeviceInfo.getDeviceId === 'function'
+            ? DeviceInfo.getDeviceId()
+            : DeviceInfo.default?.getDeviceId?.();
+        if (typeof id === 'string' && id.trim()) return id.trim();
+      } catch {
+        // peer not installed — iOS identify keeps relying on screen_size
+      }
+    }
+
+    return undefined;
+  }
+
   private get headers(): Record<string, string> {
     if (!this.apiKey) {
       throw new Error('You must initialize apiKey before use');
     }
-    return {
+    const headers: Record<string, string> = {
       'api-key': this.apiKey,
       'Cache-Control': 'no-cache',
       Pragma: 'no-cache',
@@ -53,6 +83,11 @@ export class Web2Wave {
       timezone: this.getTimezone(),
       os_version: this.getOSVersion(),
     };
+    const deviceModel = this.getDeviceModel();
+    if (deviceModel) {
+      headers.device_model = deviceModel;
+    }
+    return headers;
   }
 
   initialize(apiKey: string): void {

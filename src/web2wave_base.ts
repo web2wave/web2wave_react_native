@@ -334,6 +334,28 @@ export class Web2Wave {
     );
   }
 
+  async setApphudProfileID(
+    web2waveUserId: string,
+    apphudProfileId: string
+  ): Promise<Web2WaveResponse> {
+    return this.updateUserProperty(
+      web2waveUserId,
+      'apphud_profile_id',
+      apphudProfileId
+    );
+  }
+
+  async setSuperwallProfileID(
+    web2waveUserId: string,
+    superwallProfileId: string
+  ): Promise<Web2WaveResponse> {
+    return this.updateUserProperty(
+      web2waveUserId,
+      'superwall_profile_id',
+      superwallProfileId
+    );
+  }
+
   async identify(): Promise<IdentifyResponse | null> {
     if (!this.apiKey) {
       throw new Error('You must initialize apiKey before use');

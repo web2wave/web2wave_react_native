@@ -8,7 +8,7 @@ Web2Wave is a lightweight React Native package that provides a simple interface 
 - Check for active subscriptions
 - Manage user properties
 - web2wave deferred deeplinks via `identify()`
-- Set third-party profiles (Adapty, RevenueCat, Qonversion)
+- Set third-party profiles (Adapty, RevenueCat, Qonversion, Apphud, Superwall)
 - WebView integration for quizzes and landing pages
 - Thread-safe singleton design
 - Async/await API support
@@ -180,6 +180,18 @@ if (resultQonversion.isSuccess) {
 } else {
   console.log('Failed to save Qonversion profileID:', resultQonversion.errorMessage);
 }
+
+// Save Apphud profileID
+const resultApphud = await Web2Wave.shared.setApphudProfileID(
+  'user123',
+  '{apphudProfileID}'
+);
+
+// Save Superwall profileID (Superwall userId after identify())
+const resultSuperwall = await Web2Wave.shared.setSuperwallProfileID(
+  'user123',
+  '{superwallProfileID}'
+);
 ```
 
 ### Working with Quiz or Landing Web Page
@@ -291,6 +303,14 @@ Set Adapty profileID.
 ##### `setQonversionProfileID(web2waveUserId: string, qonversionProfileId: string): Promise<Web2WaveResponse>`
 
 Set Qonversion ProfileID.
+
+##### `setApphudProfileID(web2waveUserId: string, apphudProfileId: string): Promise<Web2WaveResponse>`
+
+Set Apphud ProfileID.
+
+##### `setSuperwallProfileID(web2waveUserId: string, superwallProfileId: string): Promise<Web2WaveResponse>`
+
+Set Superwall ProfileID.
 
 ##### `identify(): Promise<IdentifyResponse | null>`
 

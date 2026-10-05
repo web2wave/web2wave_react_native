@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `setApphudProfileID` and `setSuperwallProfileID` (sync web subscriptions to Apphud / Superwall)
+
 ## 1.3.0
 
 - Send `device_model` header for identify fingerprinting

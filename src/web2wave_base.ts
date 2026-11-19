@@ -1,5 +1,6 @@
 import { Platform, Dimensions } from 'react-native';
 import { Web2WaveResponse, Subscription, UserProperties, IdentifyResponse } from './types';
+import { isTruthyFlag, extractErrorMessage, readJsonSafely } from './helpers';
 
 export class Web2Wave {
   private static instance: Web2Wave;
@@ -90,6 +91,29 @@ export class Web2Wave {
     return headers;
   }
 
+  /**
+   * Turn an API response into a Web2WaveResponse. Non-2xx bodies are parsed
+   * too, so the backend reason (e.g. a missing API key scope on 403) reaches
+   * the caller instead of a generic failure.
+   */
+  private async toResponse(
+    response: Response,
+    isSuccessBody: (result: any) => boolean
+  ): Promise<Web2WaveResponse> {
+    const result = await readJsonSafely(response);
+    if (response.ok && isSuccessBody(result)) {
+      return { isSuccess: true };
+    }
+    return {
+      isSuccess: false,
+      errorMessage:
+        extractErrorMessage(result) ??
+        (response.ok
+          ? 'Request was not successful'
+          : `Request failed with HTTP status ${response.status}`),
+    };
+  }
+
   initialize(apiKey: string): void {
     this.apiKey = apiKey;
   }
@@ -161,12 +185,7 @@ export class Web2Wave {
       body: body.toString(),
     });
 
-    const result = await response.json();
-    if (response.status === 200) {
-      return { isSuccess: result.success === '1' };
-    } else {
-      return { isSuccess: false, errorMessage: result.message };
-    }
+    return this.toResponse(response, (result) => isTruthyFlag(result?.success));
   }
 
   async cancelSubscription(
@@ -195,12 +214,7 @@ export class Web2Wave {
       body: body.toString(),
     });
 
-    const result = await response.json();
-    if (response.status === 200) {
-      return { isSuccess: result.success === '1' };
-    } else {
-      return { isSuccess: false, errorMessage: result.error_msg };
-    }
+    return this.toResponse(response, (result) => isTruthyFlag(result?.success));
   }
 
   async refundSubscription(
@@ -231,12 +245,7 @@ export class Web2Wave {
       body: body.toString(),
     });
 
-    const result = await response.json();
-    if (response.status === 200) {
-      return { isSuccess: result.success === '1' };
-    } else {
-      return { isSuccess: false, errorMessage: result.error_msg };
-    }
+    return this.toResponse(response, (result) => isTruthyFlag(result?.success));
   }
 
   async fetchUserProperties(
@@ -293,12 +302,7 @@ export class Web2Wave {
       body: JSON.stringify({ property, value }),
     });
 
-    const result = await response.json();
-    if (response.status === 200) {
-      return { isSuccess: result.result === '1' };
-    } else {
-      return { isSuccess: false, errorMessage: result.error_msg };
-    }
+    return this.toResponse(response, (result) => isTruthyFlag(result?.result));
   }
 
   async setRevenuecatProfileID(

@@ -1,3 +1,9 @@
+## 1.4.1
+
+- Fix `cancelSubscription`, `refundSubscription` and `chargeUser` reporting successful calls as failures (the API returns `success: true` / `1`, not the string `'1'`)
+- Return the backend reason in `errorMessage` (`error_msg`, then `message`) for non-2xx responses, e.g. a 403 for an API key missing a scope, and for `success: false` bodies
+- Do not throw when an error response body is empty or not JSON
+
 ## 1.4.0
 
 - Add `setApphudProfileID` and `setSuperwallProfileID` (sync web subscriptions to Apphud / Superwall)
